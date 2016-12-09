@@ -30,7 +30,7 @@ dependencies:
     - "~/.rvm/gems/ruby-2.2.3"
 test:
   override:
-    - bundle exec rake circle:run_ui_tests
+    - bundle exec rake circle:run_ui_tests:
         parallel: true
         timeout:
             7200
