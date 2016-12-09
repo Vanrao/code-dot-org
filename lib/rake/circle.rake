@@ -76,9 +76,9 @@ namespace :circle do
       eyes_features = `grep -lr '@eyes' features`.split("\n")
       container_eyes_features = container_features & eyes_features
       RakeUtils.system_stream_output "bundle exec ./runner.rb" \
-          " --feature #{container_features.join(',')}" \
-          " --pegasus localhost.code.org:3000" \
-          " --dashboard localhost.studio.code.org:3000" \
+          " --feature concurrent.feature" \
+          " --pegasus http://127.0.0.1:8080" \
+          " --dashboard http://127.0.0.1:8080" \
           " --circle" \
           " --#{use_saucelabs ? "config #{ui_test_browsers.join(',')}" : 'local'}" \
           " --parallel #{use_saucelabs ? 16 : 8}" \
