@@ -761,7 +761,9 @@ Given(/^I am a (student|teacher)$/) do |user_type|
 end
 
 def enroll_in_plc_course(user_email)
+  puts 'DEBUG: importing rails env'
   require_rails_env
+  puts 'DEBUG: done importing rails env'
   user = User.find_by_email_or_hashed_email(user_email)
   course = Plc::Course.find_by(name: 'All The PLC Things')
   enrollment = Plc::UserCourseEnrollment.create(user: user, plc_course: course)
