@@ -62,7 +62,7 @@ namespace :circle do
     end
 
     Dir.chdir('dashboard') do
-      RakeUtils.exec_in_background "RAILS_ENV=test bundle exec unicorn -c config/unicorn.rb -E test -l #{CDO.dashboard_port}"
+      RakeUtils.exec_in_background "npm install http-server -g && http-server ~"
     end
     ui_test_browsers = browsers_to_run
     use_saucelabs = !ui_test_browsers.empty?
@@ -70,7 +70,7 @@ namespace :circle do
       start_sauce_connect
       RakeUtils.system_stream_output 'until $(curl --output /dev/null --silent --head --fail http://localhost:4445); do sleep 5; done'
     end
-    RakeUtils.system_stream_output 'until $(curl --output /dev/null --silent --head --fail http://localhost.studio.code.org:3000); do sleep 5; done'
+    RakeUtils.system_stream_output 'until $(curl --output /dev/null --silent --head --fail http://127.0.0.1:8080); do sleep 5; done'
     Dir.chdir('dashboard/test/ui') do
       container_features = `find ./features -name '*.feature' | sort | awk "NR % (${CIRCLE_NODE_TOTAL} - 1) == (${CIRCLE_NODE_INDEX} - 1)"`.split("\n").map{|f| f[2..-1]}
       eyes_features = `grep -lr '@eyes' features`.split("\n")
