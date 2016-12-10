@@ -28,6 +28,9 @@ dependencies:
     - npm install -g http-server
   cache_directories:
     - "~/.rvm/gems/ruby-2.2.3"
+database:
+  override:
+    - echo 'No database'
 test:
   override:
     - bundle exec rake circle:run_ui_tests:

@@ -44,16 +44,6 @@ TEST_EYES = 'test eyes'.freeze
 SKIP_EYES = 'skip eyes'.freeze
 
 namespace :circle do
-  desc 'Runs tests for changed sub-folders, or all tests if the tag specified is present in the most recent commit message.'
-  task :run_tests do
-    if CircleUtils.tagged?(RUN_ALL_TESTS_TAG)
-      HipChat.log "Commit message: '#{CircleUtils.circle_commit_message}' contains [#{RUN_ALL_TESTS_TAG}], force-running all tests."
-      RakeUtils.rake_stream_output 'test:all'
-    else
-      RakeUtils.rake_stream_output 'test:changed'
-    end
-  end
-
   desc 'Runs UI tests only if the tag specified is present in the most recent commit message.'
   task :run_ui_tests do
     if CircleUtils.tagged?(SKIP_UI_TESTS_TAG)
@@ -62,7 +52,7 @@ namespace :circle do
     end
 
     Dir.chdir('dashboard') do
-      RakeUtils.exec_in_background "npm install http-server -g && http-server ~"
+      RakeUtils.exec_in_background 'http-server ~'
     end
     ui_test_browsers = browsers_to_run
     use_saucelabs = !ui_test_browsers.empty?
@@ -100,16 +90,6 @@ namespace :circle do
     end
     close_sauce_connect if use_saucelabs || test_eyes?
     RakeUtils.system_stream_output 'sleep 10'
-  end
-
-  desc 'Checks for unexpected changes (for example, after a build step) and raises an exception if an unexpected change is found'
-  task :check_for_unexpected_apps_changes do
-    # Changes to yarn.lock is a particularly common case; catch it early and
-    # provide a helpful error message.
-    raise 'Unexpected change to apps/yarn.lock; if you changed package.json you should also have committed an updated yarn.lock file.' if RakeUtils.git_staged_changes? apps_dir 'yarn.lock'
-
-    # More generally, we shouldn't have _any_ staged changes in the apps directory.
-    raise "Unexpected staged changes in apps directory." if RakeUtils.git_staged_changes? apps_dir
   end
 end
 
