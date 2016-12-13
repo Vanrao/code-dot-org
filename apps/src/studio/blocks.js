@@ -2778,10 +2778,17 @@ function installVanish(blockly, generator, spriteNumberTextDropdown, startingSpr
   };
 }
 
+/**
+ * Add conditional blocks for examining the state of sprites via
+ * callbacks.
+ */
 function installConditionals(blockly, generator, spriteNumberTextDropdown, startingSpriteImageDropdown, blockInstallOptions) {
 
-  // TODO (elijah) rewrite this (and similarly-constructed statements
-  // above) to be less of a tangled mess
+  /**
+   * Append an Input for selecting the actor to examine. Input can be
+   * either in the form of a dropdown (with both regular and K1
+   * versions) or a value input.
+   */
   function appendActorSelect(block, dropdown = true) {
     if (dropdown) {
       if (spriteCount > 1) {
@@ -2805,6 +2812,11 @@ function installConditionals(blockly, generator, spriteNumberTextDropdown, start
     }
   }
 
+  /**
+   * Given a block init function and a code generation function, create
+   * two versions of a block; one which uses a dropdown and one which
+   * uses a value input to select the actor.
+   */
   function addRegularAndParamsVersions(name, initFunc, generatorFunc) {
     let regular = `studio_${name}`;
     let params = `studio_${name}Params`;
@@ -2970,7 +2982,7 @@ function installConditionals(blockly, generator, spriteNumberTextDropdown, start
     dropdown.setValue(VISIBILITY_VALUES[0][1]);
 
     this.appendDummyInput()
-      .appendTitle(dropdown, 'VALUE');
+      .appendTitle(dropdown, 'VISIBILITY');
 
     this.appendStatementInput('DO');
 
@@ -2981,9 +2993,9 @@ function installConditionals(blockly, generator, spriteNumberTextDropdown, start
     this.setInputsInline(true);
   }, function (actorSelectDropdown) {
     let sprite = actorSelectDropdown ? this.getTitleValue('SPRITE') : getSpriteIndex(this);
-    let value = this.getTitleValue('VALUE');
+    let visibility = this.getTitleValue('VISIBILITY');
     let branch = generator.statementToCode(this, 'DO');
-    let callback = `function (value) {\n  if (value === ${value}) {\n  ${branch}  }\n}`;
+    let callback = `function (visibility) {\n  if (visibility === ${visibility}) {\n  ${branch}  }\n}`;
 
     return `Studio.getSpriteVisibility('block_id_${this.id}', ${sprite}, ${callback});`;
   });
