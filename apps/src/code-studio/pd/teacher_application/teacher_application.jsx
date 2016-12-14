@@ -16,6 +16,7 @@ import {
 } from 'react-bootstrap';
 import {otherString, ButtonList} from '../form_components/button_list.jsx';
 import {getDistrictDropdownValues, validateDistrictData} from './district_dropdown_helper.js';
+import SummerProgramContent from './SummerProgramContent';
 
 const requiredStar = (<span style={{color: 'red'}}> *</span>);
 
@@ -48,8 +49,8 @@ const yesNoResponses = ['Yes', 'No'];
 const requiredFields = ['gradesAtSchool', 'firstName', 'lastName', 'primaryEmail', 'secondaryEmail', 'phoneNumber',
   'genderIdentity', 'grades2016', 'subjects2016','grades2017', 'subjects2017', 'principalFirstName',
   'principalLastName', 'principalPrefix', 'principalEmail', 'selectedCourse'];
-const requiredCsdFields = ['csdGrades'];
-const requiredCspFields = ['cspDuration', 'cspApCourse', 'cspGrades', 'cspApExamIntent'];
+const requiredCsdFields = ['gradesPlanningToTeach'];
+const requiredCspFields = ['cspDuration', 'cspApCourse', 'gradesPlanningToTeach', 'cspApExamIntent'];
 const requiredSurveyFields = ['committedToSummer', 'allStudentsShouldLearn', 'allStudentsCanLearn', 'newApproaches',
   'allAboutContent', 'allAboutProgramming', 'csCreativity', 'currentCsOpportunities', 'whyCsIsImportant',
   'whatTeachingSteps'];
@@ -82,6 +83,10 @@ const TeacherApplication = React.createClass({
     return {
 
     };
+  },
+
+  handleSubformDataChange(changedData) {
+    this.setState(changedData);
   },
 
   handleTextChange(event) {
@@ -119,6 +124,20 @@ const TeacherApplication = React.createClass({
     if (this.state[key] !== undefined && this.state[key].length === 0) {
       return 'error';
     }
+  },
+
+  componentWillUpdate() {
+    this._errorData = null;
+  },
+
+  get errorData() {
+    if (!this._errorData) {
+      this._errorData = {};
+      for (const key in this.state) {
+        this._errorData[key] = this.getRequiredValidationErrorMessage(key);
+      }
+    }
+    return this._errorData;
   },
 
   generateTeacherInformationSection() {
@@ -160,7 +179,7 @@ const TeacherApplication = React.createClass({
           errorText={this.getRequiredValidationErrorMessage('lastName')}
         />
         <FieldGroup
-          id="schoolEmail"
+          id="primaryEmail"
           label="Primary email address"
           type="email"
           onChange={this.handleTextChange}
@@ -400,6 +419,7 @@ const TeacherApplication = React.createClass({
     }
   },
 
+<<<<<<< d669f447365cd9741a37f74dd7e4694555bfb393
   renderSummerProgramContent() {
     return (
       <div id="summerProgramContent">
@@ -439,6 +459,8 @@ const TeacherApplication = React.createClass({
     );
   },
 
+=======
+>>>>>>> Show modal warning when people don't commit to the full program
   renderComputerScienceBeliefsPoll() {
     const csBeliefsQuestions = {
       allStudentsShouldLearn: 'All students should have the opportunity to learn computer science in school.',
@@ -648,7 +670,11 @@ const TeacherApplication = React.createClass({
         {this.state.selectedCourse === 'csd' && this.renderCSDSpecificContent()}
         {this.state.selectedCourse === 'csp' && this.renderCSPSpecificContent()}
         <hr/>
-        {this.renderSummerProgramContent()}
+        <SummerProgramContent
+          onChange={this.handleSubformDataChange}
+          formData={this.state}
+          errorData={this.errorData}
+        />
         <hr/>
         {this.renderComputerScienceBeliefsPoll()}
         {this.renderComputerScienceAtYourSchool()}
